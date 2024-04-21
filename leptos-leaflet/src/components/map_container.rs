@@ -56,6 +56,7 @@ pub fn MapContainer(
         _ = map_div.on_mount(move |map_div| {
             let map_div = map_div.unchecked_ref::<HtmlDivElement>();
             let options = leaflet::MapOptions::new();
+            options.set_double_click_zoom(JsValue::from_bool(false));
             options.set_zoom(zoom);
             if let Some(center) = center {
                 options.set_center(center.into());
