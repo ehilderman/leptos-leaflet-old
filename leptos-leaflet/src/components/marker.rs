@@ -84,6 +84,9 @@ pub fn Marker(
                 if let Some((x, y)) = icon_anchor.get_untracked() {
                     icon_options.set_icon_anchor(leaflet::Point::new(x, y));
                 }
+                if let Some(icon_class) = icon_class.get_untracked() {
+                    icon_options.set_class_name(icon_class);
+                }
                 let icon = leaflet::Icon::new(&icon_options);
                 options.set_icon(icon);
             } else if let Some(icon_class) = icon_class.get_untracked() {
