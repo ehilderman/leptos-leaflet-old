@@ -31,6 +31,9 @@ pub fn MapContainer(
     /// Sets the view of the map if geolocation is available
     #[prop(optional)]
     set_view: bool,
+    /// Sets the min zoom
+    #[prop(optional)]
+    min_zoom: f64,
     #[prop(optional)] map: Option<WriteSignal<Option<Map>>>,
     #[prop(optional)] events: MapEvents,
     #[prop(optional)] popup_events: PopupEvents,
@@ -57,6 +60,7 @@ pub fn MapContainer(
             let map_div = map_div.unchecked_ref::<HtmlDivElement>();
             let options = leaflet::MapOptions::new();
             options.set_double_click_zoom(JsValue::from_bool(false));
+            options.set_min_zoom(min_zoom);
             options.set_zoom(zoom);
             if let Some(center) = center {
                 options.set_center(center.into());
