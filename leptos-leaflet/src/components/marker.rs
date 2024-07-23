@@ -1,3 +1,4 @@
+use std::ops::Deref;
 use crate::components::context::extend_context_with_overlay;
 use crate::components::position::Position;
 use leptos::*;
@@ -153,10 +154,10 @@ pub fn Marker(
     );
 
     let animation_stop = watch(
-        move || animation.get(),
+        move || position_tracking.get(),
         move |animation, prev_animation, _| {
             leptos::logging::log!("{:?}",animation);
-            if let (Some(marker), Some(css_value)) = (overlay.get_value(), animation) {
+            if let Some(marker) = overlay.get_value() {
                 if let Ok(internal_icon) = js_sys::Reflect::get(&marker, &"_icon".into()) {
                     if Some(animation) == prev_animation {
                         return;
@@ -165,7 +166,7 @@ pub fn Marker(
                     leptos::logging::log!("{}", internal_icon.style().get_property_value("animation").unwrap_or("no property set for internal icon".to_string()));
                     _ = internal_icon
                         .style()
-                        .set_property("animation", css_value);
+                        .set_property("animation", "marker-bounce");
                     leptos::logging::log!("{}", internal_icon.style().get_property_value("animation").unwrap_or("still no property set for internal icon".to_string()));
                 }
             }
