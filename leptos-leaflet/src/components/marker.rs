@@ -36,6 +36,7 @@ pub fn Marker(
     #[prop(into, optional)] icon_anchor: LeafletMaybeSignal<(f64, f64)>,
     #[prop(into, optional)] attribution: LeafletMaybeSignal<String>,
     #[prop(into, optional)] rotation: LeafletMaybeSignal<f64>,
+    #[prop(into, optional)] animation: LeafletMaybeSignal<String>,
     #[prop(into, optional)] move_events: MoveEvents,
     #[prop(into, optional)] mouse_events: MouseEvents,
     #[prop(into, optional)] drag_events: DragEvents,
@@ -110,7 +111,6 @@ pub fn Marker(
             popup_events.setup(&marker);
             tooltip_events.setup(&marker);
             layer_events.setup(&marker);
-
             marker.add_to(&map);
             overlay_context.set_container(&marker);
             overlay.set_value(Some(marker));
@@ -147,6 +147,24 @@ pub fn Marker(
                     true => marker.dragging().enable(),
                     false => marker.dragging().disable(),
                 };
+            }
+        },
+        false,
+    );
+
+    let animation_stop = watch(
+        move || animation.get(),
+        move |animation, _, _| {
+            if let (Some(marker), Some(css_value)) = (overlay.get_value(), animation) {
+                if let Ok(internal_icon) = js_sys::Reflect::get(&marker, &"_icon".into()) {
+
+                    let internal_icon = internal_icon.unchecked_ref::<web_sys::HtmlElement>();
+                    leptos::logging::log!("{}", internal_icon.style().get_property_value("animation").unwrap_or("no property set for internal icon".to_string()));
+                    _ = internal_icon
+                        .style()
+                        .set_property("animation", css_value);
+                    leptos::logging::log!("{}", internal_icon.style().get_property_value("animation").unwrap_or("still no property set for internal icon".to_string()));
+                }
             }
         },
         false,
@@ -197,6 +215,7 @@ pub fn Marker(
         opacity_stop();
         drag_stop();
         rotation_stop();
+        animation_stop();
         if let Some(overlay) = overlay.get_value() {
             overlay.remove();
         }
