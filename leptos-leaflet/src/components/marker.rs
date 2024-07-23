@@ -154,10 +154,13 @@ pub fn Marker(
 
     let animation_stop = watch(
         move || animation.get(),
-        move |animation, _, _| {
+        move |animation, prev_animation, _| {
+            leptos::logging::log!("{:?}",animation);
             if let (Some(marker), Some(css_value)) = (overlay.get_value(), animation) {
                 if let Ok(internal_icon) = js_sys::Reflect::get(&marker, &"_icon".into()) {
-
+                    if Some(animation) == prev_animation {
+                        return;
+                    }
                     let internal_icon = internal_icon.unchecked_ref::<web_sys::HtmlElement>();
                     leptos::logging::log!("{}", internal_icon.style().get_property_value("animation").unwrap_or("no property set for internal icon".to_string()));
                     _ = internal_icon
