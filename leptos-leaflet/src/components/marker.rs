@@ -1,4 +1,5 @@
 use std::ops::Deref;
+use leaflet::{DivIcon, DivIconOptions};
 use crate::components::context::extend_context_with_overlay;
 use crate::components::position::Position;
 use leptos::*;
@@ -154,20 +155,16 @@ pub fn Marker(
     );
 
     let animation_stop = watch(
-        move || position_tracking.get(),
-        move |animation, prev_animation, _| {
-            leptos::logging::log!("{:?}",animation);
+        move || animation.get(),
+        move |animation, _, _| {
             if let Some(marker) = overlay.get_value() {
                 if let Ok(internal_icon) = js_sys::Reflect::get(&marker, &"_icon".into()) {
-                    if Some(animation) == prev_animation {
-                        return;
-                    }
                     let internal_icon = internal_icon.unchecked_ref::<web_sys::HtmlElement>();
-                    leptos::logging::log!("{}", internal_icon.style().get_property_value("animation").unwrap_or("no property set for internal icon".to_string()));
-                    _ = internal_icon
-                        .style()
-                        .set_property("animation", "marker-bounce");
-                    leptos::logging::log!("{}", internal_icon.style().get_property_value("animation").unwrap_or("still no property set for internal icon".to_string()));
+                    if let Some(anim) = animation {
+                        _ = internal_icon.style().set_property("animation", anim);
+                    } else {
+                        _ = internal_icon.style().remove_property("animation");
+                    }
                 }
             }
         },
