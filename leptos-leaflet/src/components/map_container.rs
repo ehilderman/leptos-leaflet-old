@@ -82,6 +82,8 @@ pub fn MapContainer(
             options.set_zoom(zoom);
             options.set_zoom_snap(zoom_snap);
             options.set_zoom_delta(zoom_delta);
+            options.set_double_click_zoom(JsValue::from_bool(double_click_zoom));
+            options.set_min_zoom(min_zoom);
             if let Some(center) = center {
                 options.set_center(center.into());
             }
