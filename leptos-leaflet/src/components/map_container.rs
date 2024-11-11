@@ -9,6 +9,10 @@ use crate::components::context::provide_leaflet_context;
 use crate::components::position::Position;
 use crate::{MapEvents, PopupEvents, TooltipEvents};
 
+/// A container for the Leaflet map.
+/// 
+/// This is the main container for the Leaflet map. It provides a way to add child nodes to the map.
+/// It also provides a signal to access the map instance, allowing to interact with the map from other components.
 #[component]
 pub fn MapContainer(
     #[prop(into, optional)] class: MaybeSignal<String>,
@@ -19,6 +23,15 @@ pub fn MapContainer(
     /// Zoom level of the map. Defaults to 10.0
     #[prop(optional, default = 10.0)]
     zoom: f64,
+    /// Wether zoom controls should be added to the map.
+    #[prop(optional, default = true)]
+    zoom_control: bool,
+    /// Zoom snap of the map. Defaults to 1.0
+    #[prop(optional, default = 1.0)]
+    zoom_snap: f64,
+    /// Zoom delta of the map. Defaults to 1.0
+    #[prop(optional, default = 1.0)]
+    zoom_delta: f64,
     /// Use geolocation from the browser to track the user
     #[prop(optional)]
     locate: bool,
@@ -38,11 +51,14 @@ pub fn MapContainer(
     #[prop(optional)] events: MapEvents,
     #[prop(optional)] popup_events: PopupEvents,
     #[prop(optional)] tooltip_events: TooltipEvents,
+    /// An optional node ref for the map `div` container element.
+    #[prop(optional)]
+    node_ref: Option<NodeRef<Div>>,
     /// Inner map child nodes
     #[prop(optional)]
     children: Option<Children>,
 ) -> impl IntoView {
-    let map_ref = create_node_ref::<Div>();
+    let map_ref = node_ref.unwrap_or(create_node_ref::<Div>());
     let map_context = provide_leaflet_context();
 
     let map_load = map_ref;
@@ -59,9 +75,10 @@ pub fn MapContainer(
         _ = map_div.on_mount(move |map_div| {
             let map_div = map_div.unchecked_ref::<HtmlDivElement>();
             let options = leaflet::MapOptions::new();
-            options.set_double_click_zoom(JsValue::from_bool(false));
-            options.set_min_zoom(min_zoom);
+            options.set_zoom_control(zoom_control);
             options.set_zoom(zoom);
+            options.set_zoom_snap(zoom_snap);
+            options.set_zoom_delta(zoom_delta);
             if let Some(center) = center {
                 options.set_center(center.into());
             }
