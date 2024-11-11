@@ -4,11 +4,15 @@ use crate::components::position::Position;
 use crate::core::LeafletMaybeSignal;
 use crate::{
     setup_layer_leaflet_option, setup_layer_leaflet_option_ref, LayerEvents, MouseEvents,
-    PopupEvents, TooltipEvents, MoveEvents,
+    MoveEvents, PopupEvents, TooltipEvents,
 };
 use leaflet::CircleOptions;
 use leptos::*;
 
+/// A circle overlay that represents a circle on the map.
+/// 
+/// The `Circle` component is used to create a circle overlay on the map. It provides options to customize
+/// the appearance of the circle, such as the stroke color, fill color, and radius.
 #[component(transparent)]
 pub fn Circle(
     #[prop(into)] center: MaybeSignal<Position>,
@@ -65,7 +69,7 @@ pub fn Circle(
             setup_layer_leaflet_option_ref!(class_name, options);
             let circle =
                 leaflet::Circle::new_with_options(&center.get_untracked().into(), &options);
-            
+
             leaflet::Circle::set_radius(&circle, radius.get_untracked());
 
             mouse_events.setup(&circle);
@@ -170,7 +174,7 @@ pub fn Circle(
             }
         },
         false,
-    );     
+    );
 
     on_cleanup(move || {
         position_stop();
