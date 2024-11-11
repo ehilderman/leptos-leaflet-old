@@ -32,6 +32,12 @@ pub fn MapContainer(
     /// Zoom delta of the map. Defaults to 1.0
     #[prop(optional, default = 1.0)]
     zoom_delta: f64,
+    /// Allow zoom on double_click
+    #[prop(optional, default = true)]
+    double_click_zoom: bool,
+    /// Sets the minimum zoom level
+    #[prop(optional, default = 0.0)]
+    min_zoom: f64,
     /// Use geolocation from the browser to track the user
     #[prop(optional)]
     locate: bool,
@@ -44,9 +50,6 @@ pub fn MapContainer(
     /// Sets the view of the map if geolocation is available
     #[prop(optional)]
     set_view: bool,
-    /// Sets the min zoom
-    #[prop(optional)]
-    min_zoom: f64,
     #[prop(optional)] map: Option<WriteSignal<Option<Map>>>,
     #[prop(optional)] events: MapEvents,
     #[prop(optional)] popup_events: PopupEvents,
